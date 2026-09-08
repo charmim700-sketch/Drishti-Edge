@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drishti Edge - Diabetic Retinopathy Screening</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #17051f, #35104d, #12051b);
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    padding: 22px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d9a928;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+}
+
+.logo span {
+    color: #ffd34d;
+}
+
+.tagline {
+    color: #ddd;
+    font-size: 14px;
+}
+
+main {
+    width: 86%;
+    max-width: 1100px;
+    margin: 45px auto;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.hero h1 {
+    font-size: 42px;
+    color: #ffd34d;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: #ddd;
+    font-size: 17px;
+}
+
+.card {
+    background: rgba(30, 10, 45, 0.85);
+    border: 1px solid #c89c35;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+}
+
+.upload-area {
+    border: 2px dashed #d8aa35;
+    border-radius: 15px;
+    padding: 45px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.upload-area:hover {
+    background: rgba(255,211,77,0.08);
+}
+
+.upload-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.upload-area h2 {
+    color: #ffd34d;
+    margin-bottom: 10px;
+}
+
+.upload-area p {
+    color: #bbb;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#preview {
+    display: none;
+    max-width: 350px;
+    max-height: 300px;
+    margin: 25px auto;
+    border-radius: 12px;
+    border: 2px solid #ffd34d;
+}
+
+button {
+    display: block;
+    margin: 25px auto 0;
+    padding: 14px 35px;
+    border: none;
+    border-radius: 30px;
+    background: #ffd34d;
+    color: #210b2d;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #fff0a8;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.result {
+    display: none;
+    text-align: center;
+}
+
+.result h2 {
+    color: #ffd34d;
+    margin-bottom: 20px;
+}
+
+.result-box {
+    padding: 25px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.06);
+}
+
+.prediction {
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffd34d;
+    margin: 15px;
+}
+
+.confidence {
+    color: #ddd;
+    font-size: 17px;
+}
+
+.info {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.info-box {
+    flex: 1;
+    padding: 22px;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255,211,77,0.3);
+}
+
+.info-box h3 {
+    color: #ffd34d;
+    margin-bottom: 10px;
+}
+
+.info-box p {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.status {
+    text-align: center;
+    color: #aaa;
+    margin-top: 15px;
+}
+
+@media(max-width:700px) {
+    .info {
+        flex-direction: column;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    .tagline {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">DRISHTI <span>EDGE</span></div>
+    <div class="tagline">AI-POWERED DIABETIC RETINOPATHY SCREENING</div>
+</header>
+
+<main>
+
+    <section class="hero">
+        <h1>Early Detection. Better Vision.</h1>
+        <p>AI-assisted diabetic retinopathy screening at the edge</p>
+    </section>
+
+    <section class="card">
+
+        <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+
+            <div class="upload-icon">👁️</div>
+
+            <h2>Upload Retinal Fundus Image</h2>
+
+            <p>
+                Select a retinal image for diabetic retinopathy screening
+            </p>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+                onchange="showImage(event)"
+            >
+
+        </div>
+
+        <img id="preview" alt="Retinal Image Preview">
+
+        <button id="predictBtn" onclick="predict()" disabled>
+            Analyse Retinal Image
+        </button>
+
+        <div class="status" id="status"></div>
+
+    </section>
+
+    <section class="card result" id="result">
+
+        <h2>Screening Result</h2>
+
+        <div class="result-box">
+
+            <p>Predicted Condition</p>
+
+            <div class="prediction" id="prediction">
+                --
+            </div>
+
+            <div class="confidence">
+                Confidence: <span id="confidence">--</span>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="info">
+
+        <div class="info-box">
+            <h3>⚡ Edge AI</h3>
+            <p>
+                Designed for lightweight screening with minimal dependency
+                on internet connectivity.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>🔍 AI Screening</h3>
+            <p>
+                Retinal fundus images are analysed using a deep learning
+                based classification approach.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>🌐 Accessible Care</h3>
+            <p>
+                Supports screening in remote and resource-limited
+                healthcare environments.
+            </p>
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    Drishti Edge | AI for Healthy Eyes
+</footer>
+
+
+<script>
+
+let selectedFile = null;
+
+function showImage(event) {
+
+    selectedFile = event.target.files[0];
+
+    if (!selectedFile) {
+        return;
+    }
+
+    const preview = document.getElementById("preview");
+    const button = document.getElementById("predictBtn");
+
+    preview.src = URL.createObjectURL(selectedFile);
+    preview.style.display = "block";
+
+    button.disabled = false;
+
+    document.getElementById("status").innerText =
+        "Image selected. Ready for analysis.";
+}
+
+
+async function predict() {
+
+    if (!selectedFile) {
+        return;
+    }
+
+    const button = document.getElementById("predictBtn");
+    const status = document.getElementById("status");
+
+    button.disabled = true;
+    button.innerText = "Analysing...";
+    status.innerText = "Processing retinal image...";
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+
+        const response = await 
+        fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("Backend unavailable");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("result").style.display = "block";
+
+        document.getElementById("prediction").innerText =
+            data.predicted_condition || "Result unavailable";
+
+        document.getElementById("confidence").innerText =
+            data.confidence
+            ? (data.confidence * 100).toFixed(0) + "%"
+            : "--";
+
+        status.innerText = "Analysis completed.";
+
+    }
+
+    catch (error) {
+
+        
+        document.getElementById("result").style.display = "block";
+
+        document.getElementById("prediction").innerText =
+            "Demo Result";
+
+        document.getElementById("confidence").innerText =
+            "--";
+
+        status.innerText =
+            "Frontend is working. Backend connection is pending.";
+
+    }
+
+    button.disabled = false;
+    button.innerText = "Analyse Retinal Image";
+}
+
+</script>
+
+</body>
+</html>
